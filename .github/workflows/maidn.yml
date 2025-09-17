@@ -1,0 +1,99 @@
+# =========================================================================
+# MANIFESTO MESIN NERAKA PENEMPA TERMUX
+# ATAS TITAH SANG DEWA PERANG!
+# TARGET: ARTEFAK .so UNTUK aarch64-linux-android (BIONIC)
+# =========================================================================
+
+name: 'TEMPA ARTEFAK NERAKA UNTUK TERMUX!'
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  forge_the_unholy_artifact:
+    name: 'MEMBANGUN DI ATAS ALTAR ANDROID NDK'
+    runs-on: ubuntu-latest
+
+    # Gunakan container Docker agar lingkungan kita bersih dan terkendali!
+    container:
+      image: ubuntu:22.04
+
+    steps:
+      # -------------------------------------------------------------------
+      # FASE 1: MEMPERSIAPKAN ALTAR PENGORBANAN
+      # -------------------------------------------------------------------
+      - name: '1. Persiapan Altar: Update & Instal Alat Dasar'
+        run: |
+          apt-get update
+          apt-get install -y git wget unzip python3 python3-pip python3-dev
+
+      # -------------------------------------------------------------------
+      # FASE 2: PANGGIL KODE SUMBER & SEMUA JEROANNYA
+      # -------------------------------------------------------------------
+      - name: '2. Panggil Kode Sumber & Seret Submodule-nya'
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+
+      # -------------------------------------------------------------------
+      # FASE 3: MENGUNDUH DAN MEMBONGKAR ANDROID NDK (API NERAKA)
+      # -------------------------------------------------------------------
+      - name: '3. Unduh dan Ekstrak Android NDK'
+        run: |
+          # Versi NDK bisa disesuaikan, r25c adalah versi stabil yang bagus
+          NDK_VERSION="r26d"
+          wget -q https://dl.google.com/android/repository/android-ndk-${NDK_VERSION}-linux.zip
+          unzip -q android-ndk-${NDK_VERSION}-linux.zip
+          # Buat env var agar mudah diakses
+          echo "NDK_ROOT=${{ github.workspace }}/android-ndk-${NDK_VERSION}" >> $GITHUB_ENV
+
+      # -------------------------------------------------------------------
+      # FASE 4: RITUAL PEMANGGILAN TOOLCHAIN BIONIC!
+      # INI ADALAH INTI DARI SIHIR HITAM INI, KONTOL!
+      # -------------------------------------------------------------------
+      - name: '4. Konfigurasi Toolchain Neraka (Bionic)'
+        run: |
+          # API Level untuk Android (24 = Android 7.0, minimum yg waras)
+          API_LEVEL=24
+
+          # Tentukan path ke toolchain kita
+          TOOLCHAIN="${{ env.NDK_ROOT }}/toolchains/llvm/prebuilt/linux-x86_64"
+          
+          # Tentukan target triplet untuk Termux
+          TARGET_HOST="aarch64-linux-android"
+
+          # Ekspor variabel-variabel ini agar bisa dipakai oleh build system
+          echo "CC=${TOOLCHAIN}/bin/${TARGET_HOST}${API_LEVEL}-clang" >> $GITHUB_ENV
+          echo "CXX=${TOOLCHAIN}/bin/${TARGET_HOST}${API_LEVEL}-clang++" >> $GITHUB_ENV
+          echo "AR=${TOOLCHAIN}/bin/llvm-ar" >> $GITHUB_ENV
+          echo "RANLIB=${TOOLCHAIN}/bin/llvm-ranlib" >> $GITHUB_ENV
+          echo "STRIP=${TOOLCHAIN}/bin/llvm-strip" >> $GITHUB_ENV
+          
+          # Flag untuk compiler
+          echo "CFLAGS=-fPIC" >> $GITHUB_ENV
+          echo "CXXFLAGS=-fPIC -std=c++17" >> $GITHUB_ENV
+
+      # -------------------------------------------------------------------
+      # FASE 5: EKSEKUSI PEMBANGUNAN DENGAN API NERAKA!
+      # -------------------------------------------------------------------
+      - name: '5. TEMPA ARTEFAK DENGAN TOOLCHAIN BIONIC!'
+        run: |
+          # Perintahkan pip untuk membangun wheel, tapi dia akan menggunakan
+          # compiler (CC, CXX) yang sudah kita racuni!
+          python3 -m pip wheel . --wheel-dir=./wheelhouse --no-deps
+        
+        # JIKA CARA DI ATAS GAGAL (karena setuptools tolol), GUNAKAN CARA MANUAL:
+        # run: |
+        #   python3 setup.py bdist_wheel
+
+      # -------------------------------------------------------------------
+      # FASE 6: KUMPULKAN ARTEFAK NERAKA YANG TELAH LAHIR
+      # -------------------------------------------------------------------
+      - name: '6. Unggah Artefak .whl yang Telah Dirasuki Bionic'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'TermuxWheel-aarch64-Bionic-Hellfire'
+          # Path wheel mungkin berbeda, sesuaikan jika perlu
+          path: ./wheelhouse/*.whl
