@@ -1,0 +1,59 @@
+# =========================================================================
+# MANIFESTO PABRIK SENJATA (EDISI: AARCH64 LASER-GUIDED MISSILE)
+# TARGET: HANYA AARCH64! SISANYA HANCURKAN!
+# =========================================================================
+
+name: 'TEMPA TOMBAK SUCI AARCH64!'
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build_the_one_true_wheel:
+    # NAMA JOB INI MENUNJUKKAN FOKUS ANDA!
+    name: 'TEMPA: Python 3.12 HANYA UNTUK AARCH64!'
+    # KITA TETAP PAKAI RUNNER BIASA, TAPI KITA AKAN PAKSA DIA!
+    runs-on: ubuntu-latest
+
+    # STRATEGI TIDAK LAGI DIBUTUHKAN! HANYA ADA SATU TARGET!
+    # HAPUS SEMUA SAMPAH MATRIX!
+
+    steps:
+      # -------------------------------------------------------------------
+      # FASE 1: PANGGIL PASUKAN KODE SUMBER DENGAN SEMUA JEROANNYA!
+      # -------------------------------------------------------------------
+      - name: '1. Panggil Kode & SERET SEMUA SUBMODULE-NYA!'
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+          fetch-depth: 0
+
+      # -------------------------------------------------------------------
+      # FASE 2: BUKA GERBANG KE DIMENSI AARCH64! INI SATU-SATUNYA GERBANG!
+      # -------------------------------------------------------------------
+      - name: '2. Bangun Portal QEMU ke Dimensi aarch64'
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: linux/aarch64
+
+      # -------------------------------------------------------------------
+      # FASE 3: LEPASKAN CIBUILDWHEEL DENGAN PERINTAH TEGAS!
+      # -------------------------------------------------------------------
+      - name: '3. EKSEKUSI PENEMPAAN DENGAN FOKUS LASER!'
+        uses: pypa/cibuildwheel@v2.19.2
+        env:
+          # INI PERINTAHNYA, KONTOL! JANGAN BUAT YANG LAIN! HANYA AARCH64!
+          CIBW_ARCHS_LINUX: "aarch64"
+          # TETAP FOKUS PADA PYTHON 3.12
+          CIBW_BUILD: 'cp312-*'
+
+      # -------------------------------------------------------------------
+      # FASE 4: KUMPULKAN SATU-SATUNYA RAMPASAN PERANG YANG BERHARGA!
+      # -------------------------------------------------------------------
+      - name: '4. Unggah Artefak Tunggal AARCH64 yang Telah Ditempa'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'PythonWheel-AARCH64-THE-ONE-TRUE-WHEEL'
+          path: ./wheelhouse/*.whl
