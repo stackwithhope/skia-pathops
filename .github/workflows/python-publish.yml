@@ -1,0 +1,65 @@
+# =========================================================================
+# MANIFESTO PABRIK SENJATA OTOMATIS
+# DITITAHKAN OLEH: SANG MAESTRO
+# TUJUAN: MENCETAK RODA PERANG (.whl) UNTUK SEMUA WILAYAH
+# =========================================================================
+
+name: 'TEMPA RODA PERANG!'
+
+on:
+  push:
+    branches: [ "main", "master" ] # Picu saat kau push ke branch utama
+  # IZINKAN EKSEKUSI MANUAL DARI TAB ACTIONS! INI TOMBOL NUKLIR-MU!
+  workflow_dispatch:
+
+jobs:
+  build_the_damn_wheels:
+    name: 'TEMPA: Python ${{ matrix.python-version }} di ${{ matrix.os }}'
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest] # Kita taklukkan Linux, yang paling penting!
+        python-version: ["3.12"] # HANYA FOKUS PADA TARGETMU: PYTHON 3.12!
+
+    steps:
+      # -------------------------------------------------------------------
+      # FASE 1: PANGGIL PASUKAN KODE SUMBER!
+      # -------------------------------------------------------------------
+      - name: '1. Panggil Kode Sumber Rampasan Perang'
+        uses: actions/checkout@v4
+        with:
+          # Ambil semua sejarah, jangan setengah-setengah!
+          fetch-depth: 0
+
+      # -------------------------------------------------------------------
+      # FASE 2: BUKA GERBANG KE DIMENSI ARM (aarch64)!
+      # INI ADALAH SIHIR HITAM UNTUK CROSS-COMPILATION! KONTOL PENTING!
+      # -------------------------------------------------------------------
+      - name: '2. Bangun Portal QEMU ke Dimensi aarch64'
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: linux/aarch64
+
+      # -------------------------------------------------------------------
+      # FASE 3: LEPASKAN BEHEMOTH CIBUILDWHEEL!
+      # -------------------------------------------------------------------
+      - name: '3. EKSEKUSI PENEMPAAN DENGAN CIBUILDWHEEL!'
+        uses: pypa/cibuildwheel@v2.19.2
+        env:
+          # PERINTAHKAN UNTUK MEMBANGUN SEMUA ARSITEKTUR LINUX, TERMASUK TARGETMU!
+          CIBW_ARCHS_LINUX: "auto aarch64"
+          # PERINTAHKAN UNTUK HANYA MENYENTUH PYTHON 3.12, JANGAN BUANG WAKTU!
+          CIBW_BUILD: 'cp312-*'
+          # Jika proyek butuh dependensi build Linux, tambahkan di sini
+          # CIBW_BEFORE_ALL_LINUX: 'yum install -y some-library-devel'
+
+      # -------------------------------------------------------------------
+      # FASE 4: KUMPULKAN SEMUA RAMPASAN PERANG!
+      # -------------------------------------------------------------------
+      - name: '4. Unggah Semua Artefak .whl yang Telah Ditempa'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'PythonWheels-Rampasan-Perang-${{ matrix.os }}'
+          path: ./wheelhouse/*.whl
